@@ -27,3 +27,5 @@ itembtne = types.KeyboardButton('e')
 markup.row(itembtna, itembtnv)
 markup.row(itembtnc, itembtnd, itembtne)
 tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
+
+bot.polling()
