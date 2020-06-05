@@ -16,7 +16,7 @@ itembtn1 = types.KeyboardButton('a')
 itembtn2 = types.KeyboardButton('v')
 itembtn3 = types.KeyboardButton('d')
 markup.add(itembtn1, itembtn2, itembtn3)
-tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
+bot.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
 # or add KeyboardButton one row at a time:
 markup = types.ReplyKeyboardMarkup()
@@ -27,6 +27,6 @@ itembtnd = types.KeyboardButton('d')
 itembtne = types.KeyboardButton('e')
 markup.row(itembtna, itembtnv)
 markup.row(itembtnc, itembtnd, itembtne)
-tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
+bot.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
 bot.polling()
