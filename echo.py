@@ -1,32 +1,53 @@
 import telebot
+import ast
+import time
 from telebot import types
 
 bot = telebot.TeleBot("1296488130:AAH_Qi3WpsvlHy8Q9A-CEqib1TLjSxIw0kI")
 
-# Using the ReplyKeyboardMarkup class
-# It's constructor can take the following optional arguments:
-# - resize_keyboard: True/False (default False)
-# - one_time_keyboard: True/False (default False)
-# - selective: True/False (default False)
-# - row_width: integer (default 3)
-# row_width is used in combination with the add() function.
-# It defines how many buttons are fit on each row before continuing on the next row.
-markup = types.ReplyKeyboardMarkup(row_width=2)
-itembtn1 = types.KeyboardButton('a')
-itembtn2 = types.KeyboardButton('v')
-itembtn3 = types.KeyboardButton('d')
-markup.add(itembtn1, itembtn2, itembtn3)
-bot.send_message(from_user.id, "Choose one letter:", reply_markup=markup)
+stringList = {"Name": "John", "Language": "Python", "API": "pyTelegramBotAPI"}
+crossIcon = u"\u274C"
 
-# or add KeyboardButton one row at a time:
-markup = types.ReplyKeyboardMarkup()
-itembtna = types.KeyboardButton('a')
-itembtnv = types.KeyboardButton('v')
-itembtnc = types.KeyboardButton('c')
-itembtnd = types.KeyboardButton('d')
-itembtne = types.KeyboardButton('e')
-markup.row(itembtna, itembtnv)
-markup.row(itembtnc, itembtnd, itembtne)
-bot.send_message(from_user.id, "Choose one letter:", reply_markup=markup)
+def makeKeyboard():
+markup = types.InlineKeyboardMarkup()
 
-bot.polling()
+for key, value in stringList.items():
+markup.add(types.InlineKeyboardButton(text=value,
+callback_data="['value', '" + value + "', '" + key + "']"),
+types.InlineKeyboardButton(text=crossIcon,
+callback_data="['key', '" + key + "']"))
+
+return markup
+
+@bot.message_handler(commands=['test'])
+def handle_command_adminwindow(message):
+bot.send_message(chat_id=message.chat.id,
+text="Here are the values of stringList",
+reply_markup=makeKeyboard(),
+parse_mode='HTML')
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_query(call):
+
+if (call.data.startswith("['value'")):
+print(f"call.data : {call.data} , type : {type(call.data)}")
+print(f"ast.literal_eval(call.data) : {ast.literal_eval(call.data)} , type : {type(ast.literal_eval(call.data))}")
+valueFromCallBack = ast.literal_eval(call.data)[1]
+keyFromCallBack = ast.literal_eval(call.data)[2]
+bot.answer_callback_query(callback_query_id=call.id,
+show_alert=True,
+text="You Clicked " + valueFromCallBack + " and key is " + keyFromCallBack)
+
+if (call.data.startswith("['key'")):
+keyFromCallBack = ast.literal_eval(call.data)[1]
+del stringList[keyFromCallBack]
+bot.edit_message_text(chat_id=call.message.chat.id,
+text="Here are the values of stringList",
+message_id=call.message.message_id,
+reply_markup=makeKeyboard(),
+parse_mode='HTML')
+while True:
+try:
+bot.polling(none_stop=True, interval=0, timeout=0)
+except:
+time.sleep(10)
